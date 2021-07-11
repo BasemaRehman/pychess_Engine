@@ -23,6 +23,8 @@ def main():
     screen.fill(p.Color("white"))
     #Calls in the chess board from chessEngine.py
     gs = chessEngine.GameState()
+    validMoves = gs.getValidMoves()
+    moveMade = False #Flag for when move is made
     print (gs.board)
     #Loads in the images only once to make it quicker
     loadImages()
@@ -48,11 +50,20 @@ def main():
                     #Make a move and then restart the player clicks
                     move = chessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                     print(move.getChessNotation())
-                    gs.makeMove(move)
+                    if move in validMoves:
+                        gs.makeMove(move)
+                        moveMade = True
                     sqSelected = ()
                     playerClicks = []
+            #Key handlers
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z:
+                    gs.undoMove()
+                    moveMade = True
 
-
+        if moveMade:
+            validMoves = gs.getValidMoves()
+            moveMade = False
 
         drawGameState(screen, gs)
         clock.tick(MAX_FPS)
