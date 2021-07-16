@@ -4,7 +4,9 @@ Completed:
  - Board Drawn
  - Pieces added to board
  - Able to move pieces (But can't move blanks)
+ - Pawn moves added
 
 Next TODO
- - Valid move check
+ - Additional Valid move check
+
 
