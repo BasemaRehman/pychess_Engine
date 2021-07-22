@@ -24,6 +24,14 @@ class GameState():
     '''
     Takes a Move as a parameter and execute it (will not work for castling, pawn promotion and en-passent)
     '''
+    global toMove
+    def team(self):
+        global toMove
+        if self.whiteToMove:  # White knight moves
+            toMove = 'w'
+        else:
+            toMove = 'b'
+
     def makeMove(self, move):
        # if(self.board[move.startRow][move.startCol] != "--"):
             self.board[move.startRow][move.startCol] = "--"
@@ -107,7 +115,29 @@ class GameState():
     Gets all moves for the Knight
     '''
     def getKnightMoves(self, r, c, moves):
-        pass
+        global toMove
+        self.team()
+        if r - 2 >= 0:
+            if c - 1 >= 0 and self.board[r-2][c-1][0] != toMove:
+                moves.append(Move((r,c), (r-2,c-1), self.board))
+            if c + 1 <= 7 and self.board[r-2][c+1][0] != toMove:
+                moves.append(Move((r, c), (r - 2, c + 1), self.board))
+        if r + 2 <= 7:
+            if c - 1 >= 0 and self.board[r+2][c-1][0] != toMove:
+                moves.append(Move((r,c), (r+2,c-1), self.board))
+            if c + 1 <= 7 and self.board[r+2][c+1][0] != toMove:
+                moves.append(Move((r, c), (r + 2, c + 1), self.board))
+        if c - 2 >= 0:
+            if r - 1 >= 0 and self.board[r - 1][c - 2][0] != toMove:
+                moves.append(Move((r, c), (r - 1, c - 2), self.board))
+            if r + 1 <= 7 and self.board[r + 1][c - 2][0] != toMove:
+                moves.append(Move((r, c), (r + 1, c - 2), self.board))
+        if c + 2 <= 7:
+            if r - 1 >= 0 and self.board[r - 1][c + 2][0] != toMove:
+                moves.append(Move((r, c), (r - 1, c + 2), self.board))
+            if r + 1 <= 7 and self.board[r + 1][c + 2][0] != toMove:
+                moves.append(Move((r, c), (r + 1, c + 2), self.board))
+
 
     '''
     Gets all moves for the Bishop
@@ -119,7 +149,28 @@ class GameState():
     Gets all moves for the King
     '''
     def getKingMoves(self, r, c, moves):
-        pass
+        global toMove
+        self.team()
+        if r - 1 >= 0:
+            if self.board[r - 1][c][0] != toMove:
+                moves.append(Move((r, c), (r - 1, c), self.board))
+            if c - 1 >= 0 and self.board[r - 1][c - 1][0] != toMove:
+                moves.append(Move((r, c), (r - 1, c - 1), self.board))
+            if c + 1 <= 7 and self.board[r - 1][c + 1][0] != toMove:
+                moves.append(Move((r, c), (r - 1, c + 1), self.board))
+        if r + 1 <= 7:
+            if self.board[r + 1][c][0] != toMove:
+                moves.append(Move((r, c), (r + 1, c), self.board))
+            if c - 1 >= 0 and self.board[r + 1][c - 1][0] != toMove:
+                moves.append(Move((r, c), (r + 1, c - 1), self.board))
+            if c + 1 <= 7 and self.board[r + 1][c + 1][0] != toMove:
+                moves.append(Move((r, c), (r + 1, c + 1), self.board))
+        if c - 1 >= 0:
+            if self.board[r][c - 1][0] != toMove:
+                moves.append(Move((r, c), (r, c - 1), self.board))
+        if c + 1 <= 7:
+            if self.board[r][c + 1][0] != toMove:
+                moves.append(Move((r, c), (r, c + 1), self.board))
 
     '''
     Gets all moves for the Queen
