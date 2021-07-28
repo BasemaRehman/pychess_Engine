@@ -3,10 +3,11 @@
 Completed:
  - Board Drawn
  - Pieces added to board
- - Able to move pieces (But can't move blanks)
- - Pawn, King, Knight moves added
+ - Able to complete move/undo move on pieces (But can't move blanks)
+ - First draft of all moves added
 
 Next TODO
- - Additional Valid move check
+ - Additional Valid move check - avoid checkmate etc.
+ - Try to clean up getRookMoves() and getBishopMoves() methods
 
 

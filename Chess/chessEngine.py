@@ -33,7 +33,7 @@ class GameState():
             toMove = 'b'
 
     def makeMove(self, move):
-       # if(self.board[move.startRow][move.startCol] != "--"):
+        if(self.board[move.startRow][move.startCol] != "--"):
             self.board[move.startRow][move.startCol] = "--"
             self.board[move.endRow][move.endCol] = move.pieceMoved
             self.moveLog.append(move) #Log the move to show game history or to undo the move
@@ -66,17 +66,7 @@ class GameState():
                 if(turn == 'w' and self.whiteToMove) or (turn == 'b' and not self.whiteToMove):
                     piece = self.board[r][c][1]
                     self.moveFunctions[piece](r,c,moves) #Calls the method by the piece type
-
         return moves
-
-                    #elif piece == 'N':
-                     #   self.getKnightMoves(r,c,moves)
-                    #elif piece == 'K':
-                    #    self.getKingMoves(r,c,moves)
-                    #elif piece == 'Q':
-                    #    self.getQueenMoves(r,c,moves)
-                    #elif piece == 'B':
-                    #    self.getBishopMoves(r,c,moves)
 
     '''
     Gets all moves for pawns
@@ -109,7 +99,42 @@ class GameState():
     Gets all moves for the Rook
     '''
     def getRookMoves(self, r, c, moves):
-        pass
+        #Rooks can move forward back left and right until then get another piece
+        #Will see if I can clean this up
+        global toMove
+        self.team();
+        temp = r
+        while temp + 1 <= 7:
+            if self.board[temp + 1][c] == "--":
+                moves.append(Move((r, c), (temp + 1, c), self.board))
+            elif self.board[temp + 1][c][0] != toMove:
+                moves.append(Move((r, c), (temp + 1, c), self.board))
+                break
+            temp = temp + 1
+        temp = r
+        while temp - 1 >= 0:
+            if self.board[temp - 1][c] == "--":
+                moves.append(Move((r, c), (temp - 1, c), self.board))
+            elif self.board[temp - 1][c][0] != toMove:
+                moves.append(Move((r, c), (temp - 1, c), self.board))
+                break
+            temp = temp - 1
+        temp = c
+        while temp - 1 >= 0:
+            if self.board[r][temp - 1] == "--":
+                moves.append(Move((r, c), (r, temp - 1), self.board))
+            elif self.board[r][temp - 1][0] != toMove:
+                moves.append(Move((r, c), (r, temp - 1), self.board))
+                break
+            temp = temp - 1
+        temp = c
+        while temp + 1 <= 7:
+            if self.board[r][temp + 1] == "--":
+                moves.append(Move((r, c), (r, temp + 1), self.board))
+            elif self.board[r][temp - 1][0] != toMove:
+                moves.append(Move((r, c), (r, temp + 1), self.board))
+                break
+            temp = temp + 1
 
     '''
     Gets all moves for the Knight
@@ -143,7 +168,55 @@ class GameState():
     Gets all moves for the Bishop
     '''
     def getBishopMoves(self, r, c, moves):
-        pass
+        # Bishops can move diagonally until then get another piece
+        # Will see if I can clean this up
+        global toMove
+        self.team();
+        #right and up diagonal = r-1 c+1
+        tempc = c;
+        tempr = r;
+        while tempc + 1 <= 7 and tempr - 1 >= 0:
+            if self.board[tempr - 1][tempc +1] == "--":
+                moves.append(Move((r, c), (tempr - 1, tempc + 1), self.board))
+            elif self.board[tempr - 1][tempc + 1][0] != toMove:
+                moves.append(Move((r, c), (tempr - 1, tempc + 1), self.board))
+                break
+            tempc = tempc + 1
+            tempr = tempr - 1
+        #Left and up diagonal r - 1 and c - 1
+        tempc = c;
+        tempr = r;
+        while tempc - 1 >= 0 and tempr - 1 >= 0:
+            if self.board[tempr - 1][tempc - 1] == "--":
+                moves.append(Move((r, c), (tempr - 1, tempc - 1), self.board))
+            elif self.board[tempr - 1][tempc - 1][0] != toMove:
+                moves.append(Move((r, c), (tempr - 1, tempc - 1), self.board))
+                break
+            tempc = tempc - 1
+            tempr = tempr - 1
+        # Left and down diagonal r + 1 and c - 1
+        tempc = c;
+        tempr = r;
+        while tempc - 1 >= 0 and tempr + 1 <= 7:
+            if self.board[tempr + 1][tempc - 1] == "--":
+                moves.append(Move((r, c), (tempr + 1, tempc - 1), self.board))
+            elif self.board[tempr + 1][tempc - 1][0] != toMove:
+                moves.append(Move((r, c), (tempr + 1, tempc - 1), self.board))
+                break
+            tempc = tempc - 1
+            tempr = tempr + 1
+        # right and down diagonal r + 1 and c + 1
+        tempc = c;
+        tempr = r;
+        while tempc + 1 <= 7 and tempr + 1 <= 7:
+            if self.board[tempr + 1][tempc + 1] == "--":
+                moves.append(Move((r, c), (tempr + 1, tempc + 1), self.board))
+            elif self.board[tempr + 1][tempc - 1][0] != toMove:
+                moves.append(Move((r, c), (tempr + 1, tempc + 1), self.board))
+                break
+            tempc = tempc + 1
+            tempr = tempr + 1
+
 
     '''
     Gets all moves for the King
@@ -176,7 +249,9 @@ class GameState():
     Gets all moves for the Queen
     '''
     def getQueenMoves(self, r, c, moves):
-        pass
+        #Queen moves should be equal to the rook moves + bishop moves - No need to repeat
+        self.getRookMoves(r, c, moves)
+        self.getBishopMoves(r,c,moves)
 
 
 #Make a class to do the movements. It can be done by keeping track of coordinates but this is easier
