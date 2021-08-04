@@ -6,7 +6,7 @@ class GameState():
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
             ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "bN", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
@@ -95,155 +95,81 @@ class GameState():
             if c + 1 <= 7:
                 if (self.board[r + 1][c + 1][0] == 'w'):
                     moves.append(Move((r,c), (r+1, c+1), self.board))
+        #Add Pawn promotions
     '''
     Gets all moves for the Rook
     '''
     def getRookMoves(self, r, c, moves):
         #Rooks can move forward back left and right until then get another piece
-        #Will see if I can clean this up
-        global toMove
-        self.team();
-        temp = r
-        while temp + 1 <= 7:
-            if self.board[temp + 1][c] == "--":
-                moves.append(Move((r, c), (temp + 1, c), self.board))
-            elif self.board[temp + 1][c][0] != toMove:
-                moves.append(Move((r, c), (temp + 1, c), self.board))
-                break
-            temp = temp + 1
-        temp = r
-        while temp - 1 >= 0:
-            if self.board[temp - 1][c] == "--":
-                moves.append(Move((r, c), (temp - 1, c), self.board))
-            elif self.board[temp - 1][c][0] != toMove:
-                moves.append(Move((r, c), (temp - 1, c), self.board))
-                break
-            temp = temp - 1
-        temp = c
-        while temp - 1 >= 0:
-            if self.board[r][temp - 1] == "--":
-                moves.append(Move((r, c), (r, temp - 1), self.board))
-            elif self.board[r][temp - 1][0] != toMove:
-                moves.append(Move((r, c), (r, temp - 1), self.board))
-                break
-            temp = temp - 1
-        temp = c
-        while temp + 1 <= 7:
-            if self.board[r][temp + 1] == "--":
-                moves.append(Move((r, c), (r, temp + 1), self.board))
-            elif self.board[r][temp - 1][0] != toMove:
-                moves.append(Move((r, c), (r, temp + 1), self.board))
-                break
-            temp = temp + 1
+        directions = ((-1,0), (0,-1), (1,0), (0,1))
+        enemyColour = 'b' if self.whiteToMove else 'w'
+        for d in directions:
+            for i in range(1,8):
+                endRow = r + d[0] * i
+                endCol = c + d[1] * i
+                if 0 <= endRow < 8 and 0 <= endCol < 8:
+                    endPiece = self.board[endRow][endCol]
+                    if endPiece == "--":
+                        moves.append(Move((r,c), (endRow, endCol), self.board))
+                    elif endPiece[0] == enemyColour:
+                        moves.append(Move((r,c), (endRow, endCol), self.board))
+                        break
+                    else:
+                        break
+                else:
+                    break
 
     '''
     Gets all moves for the Knight
     '''
     def getKnightMoves(self, r, c, moves):
-        global toMove
-        self.team()
-        if r - 2 >= 0:
-            if c - 1 >= 0 and self.board[r-2][c-1][0] != toMove:
-                moves.append(Move((r,c), (r-2,c-1), self.board))
-            if c + 1 <= 7 and self.board[r-2][c+1][0] != toMove:
-                moves.append(Move((r, c), (r - 2, c + 1), self.board))
-        if r + 2 <= 7:
-            if c - 1 >= 0 and self.board[r+2][c-1][0] != toMove:
-                moves.append(Move((r,c), (r+2,c-1), self.board))
-            if c + 1 <= 7 and self.board[r+2][c+1][0] != toMove:
-                moves.append(Move((r, c), (r + 2, c + 1), self.board))
-        if c - 2 >= 0:
-            if r - 1 >= 0 and self.board[r - 1][c - 2][0] != toMove:
-                moves.append(Move((r, c), (r - 1, c - 2), self.board))
-            if r + 1 <= 7 and self.board[r + 1][c - 2][0] != toMove:
-                moves.append(Move((r, c), (r + 1, c - 2), self.board))
-        if c + 2 <= 7:
-            if r - 1 >= 0 and self.board[r - 1][c + 2][0] != toMove:
-                moves.append(Move((r, c), (r - 1, c + 2), self.board))
-            if r + 1 <= 7 and self.board[r + 1][c + 2][0] != toMove:
-                moves.append(Move((r, c), (r + 1, c + 2), self.board))
+        knightMoves = ((-2 , -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1))
+        allyColour = 'w' if self.whiteToMove else 'b'
+        for m in knightMoves:
+            endRow = r + m[0]
+            endCol = c + m[1]
+            if(0 <= endRow < 8 and 0 <= endCol < 8):
+                endPiece = self.board[endRow][endCol]
+                if endPiece[0] != allyColour:
+                    moves.append(Move((r,c), (endRow, endCol), self.board))
 
 
     '''
     Gets all moves for the Bishop
     '''
     def getBishopMoves(self, r, c, moves):
-        # Bishops can move diagonally until then get another piece
-        # Will see if I can clean this up
-        global toMove
-        self.team();
-        #right and up diagonal = r-1 c+1
-        tempc = c;
-        tempr = r;
-        while tempc + 1 <= 7 and tempr - 1 >= 0:
-            if self.board[tempr - 1][tempc +1] == "--":
-                moves.append(Move((r, c), (tempr - 1, tempc + 1), self.board))
-            elif self.board[tempr - 1][tempc + 1][0] != toMove:
-                moves.append(Move((r, c), (tempr - 1, tempc + 1), self.board))
-                break
-            tempc = tempc + 1
-            tempr = tempr - 1
-        #Left and up diagonal r - 1 and c - 1
-        tempc = c;
-        tempr = r;
-        while tempc - 1 >= 0 and tempr - 1 >= 0:
-            if self.board[tempr - 1][tempc - 1] == "--":
-                moves.append(Move((r, c), (tempr - 1, tempc - 1), self.board))
-            elif self.board[tempr - 1][tempc - 1][0] != toMove:
-                moves.append(Move((r, c), (tempr - 1, tempc - 1), self.board))
-                break
-            tempc = tempc - 1
-            tempr = tempr - 1
-        # Left and down diagonal r + 1 and c - 1
-        tempc = c;
-        tempr = r;
-        while tempc - 1 >= 0 and tempr + 1 <= 7:
-            if self.board[tempr + 1][tempc - 1] == "--":
-                moves.append(Move((r, c), (tempr + 1, tempc - 1), self.board))
-            elif self.board[tempr + 1][tempc - 1][0] != toMove:
-                moves.append(Move((r, c), (tempr + 1, tempc - 1), self.board))
-                break
-            tempc = tempc - 1
-            tempr = tempr + 1
-        # right and down diagonal r + 1 and c + 1
-        tempc = c;
-        tempr = r;
-        while tempc + 1 <= 7 and tempr + 1 <= 7:
-            if self.board[tempr + 1][tempc + 1] == "--":
-                moves.append(Move((r, c), (tempr + 1, tempc + 1), self.board))
-            elif self.board[tempr + 1][tempc - 1][0] != toMove:
-                moves.append(Move((r, c), (tempr + 1, tempc + 1), self.board))
-                break
-            tempc = tempc + 1
-            tempr = tempr + 1
+        directions = ((-1, -1), (1, -1), (-1, 1), (1, 1))
+        enemyColour = 'b' if self.whiteToMove else 'w'
+        for d in directions:
+            for i in range(1, 8):
+                endRow = r + d[0] * i
+                endCol = c + d[1] * i
+                if 0 <= endRow < 8 and 0 <= endCol < 8:
+                    endPiece = self.board[endRow][endCol]
+                    if endPiece == "--":
+                        moves.append(Move((r, c), (endRow, endCol), self.board))
+                    elif endPiece[0] == enemyColour:
+                        moves.append(Move((r, c), (endRow, endCol), self.board))
+                        break
+                    else:
+                        break
+                else:
+                    break
 
 
     '''
     Gets all moves for the King
     '''
     def getKingMoves(self, r, c, moves):
-        global toMove
-        self.team()
-        if r - 1 >= 0:
-            if self.board[r - 1][c][0] != toMove:
-                moves.append(Move((r, c), (r - 1, c), self.board))
-            if c - 1 >= 0 and self.board[r - 1][c - 1][0] != toMove:
-                moves.append(Move((r, c), (r - 1, c - 1), self.board))
-            if c + 1 <= 7 and self.board[r - 1][c + 1][0] != toMove:
-                moves.append(Move((r, c), (r - 1, c + 1), self.board))
-        if r + 1 <= 7:
-            if self.board[r + 1][c][0] != toMove:
-                moves.append(Move((r, c), (r + 1, c), self.board))
-            if c - 1 >= 0 and self.board[r + 1][c - 1][0] != toMove:
-                moves.append(Move((r, c), (r + 1, c - 1), self.board))
-            if c + 1 <= 7 and self.board[r + 1][c + 1][0] != toMove:
-                moves.append(Move((r, c), (r + 1, c + 1), self.board))
-        if c - 1 >= 0:
-            if self.board[r][c - 1][0] != toMove:
-                moves.append(Move((r, c), (r, c - 1), self.board))
-        if c + 1 <= 7:
-            if self.board[r][c + 1][0] != toMove:
-                moves.append(Move((r, c), (r, c + 1), self.board))
+        kingMoves = ((-1, -1), (1, -1), (-1, 1), (1, 1),(-1,0), (0,-1), (1,0), (0,1))
+        allyColour = 'w' if self.whiteToMove else 'b'
+        for i in range(8):
+            endRow = r + kingMoves[i][0]
+            endCol = c + kingMoves[i][1]
+            if 0 <= endRow < 8 and 0 <= endCol < 8:
+                endPiece = self.board[endRow][endCol]
+                if endPiece[0] != allyColour:
+                    moves.append(Move((r,c), (endRow, endCol), self.board))
 
     '''
     Gets all moves for the Queen
